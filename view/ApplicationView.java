@@ -7,6 +7,7 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import controller.Controller;
 import model.Sound;
@@ -306,12 +307,20 @@ public class ApplicationView extends JFrame {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				JFileChooser j = new JFileChooser();
+				j.setFileFilter(new FileNameExtensionFilter("*.wav","wav"));
 				int r = j.showSaveDialog(null);
 				// if the user selects a file
 				if (r == JFileChooser.APPROVE_OPTION) {
 					// set the label to the path of the selected file
 					String filePath = j.getSelectedFile().getAbsolutePath();
-					ctrl.AddSound(filePath);
+					try {
+						ctrl.AddSound(filePath);
+						JOptionPane.showMessageDialog(global, "Le fichier " + filePath + " a bien été ajouté.");
+					} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+						JOptionPane.showMessageDialog(global, e1.getMessage());
+					}
 
 					reloadSoundTable();
 				}
@@ -395,7 +404,12 @@ public class ApplicationView extends JFrame {
                 if (column == 2 && (aValue instanceof Boolean)) {
                     boolean pushed = (boolean) aValue;
                     if (pushed) {
-						ctrl.PlaySound(this.getValueAt(row, 1).toString());
+						try {
+							ctrl.PlaySound(this.getValueAt(row, 1).toString());
+						} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
                     }
                 }
             }

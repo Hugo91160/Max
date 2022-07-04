@@ -1,9 +1,12 @@
 package controller;
 
+import java.io.IOException;
+
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.TargetDataLine;
+import javax.sound.sampled.UnsupportedAudioFileException;
 
 public class Recorder extends Thread {
 	private volatile boolean stopRecord;
@@ -65,7 +68,12 @@ public class Recorder extends Thread {
 
             if (peak > 0.35f) {
             	System.out.println("Detected sound");
-            	ctrl.PlayRandomSound();
+				try {
+					ctrl.PlayRandomSound();
+				} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
             	
             	try {
 					sleep(7000);					

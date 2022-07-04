@@ -38,7 +38,7 @@ public class Controller {
 		this.sounds = soundDao.GetSounds();
 	}
 	
-	public void AddSound(String filePath) {
+	public void AddSound(String filePath) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
 		for (int i=0; i<sounds.size(); i++) {
 			if (sounds.get(i).getFilePath().contentEquals(filePath)) {
 				System.out.println("The specified file has already been added.");
@@ -46,63 +46,30 @@ public class Controller {
 			}
 		}
 		Sound s;
-		try {
-			s = new Sound(filePath);
-			soundDao.AddSound(s);
-			this.sounds.add(s);
-		} catch (UnsupportedAudioFileException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (LineUnavailableException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		s = new Sound(filePath);
+		soundDao.AddSound(s);
+		this.sounds.add(s);
 	}
 	
-	public void PlaySound(String filePath) {
+	public void PlaySound(String filePath) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
 		for (int i=0; i<sounds.size(); i++) {
 			if (sounds.get(i).getFilePath().contentEquals(filePath)) {
-				try {
-					sounds.get(i).resumeAudio();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (LineUnavailableException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (UnsupportedAudioFileException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				sounds.get(i).resumeAudio();
 				System.out.println("Playing sound " + filePath);
 			}
 		}
 	}
 	
-	public void PlayRandomSound() {
+	public void PlayRandomSound() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
 		if (this.sounds.size() == 0) {
 			System.out.println("Warning: no sounds given.");
 			return;
-		}
-		
+		}		
 		
 		Random rand = new Random();
 		int index = rand.nextInt(this.sounds.size());
-		try {
-			this.sounds.get(index).resumeAudio();
-		} catch (UnsupportedAudioFileException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (LineUnavailableException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		this.sounds.get(index).resumeAudio();
+
 	}
 	
 	public void DeleteSound(String filePath) {

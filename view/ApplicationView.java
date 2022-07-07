@@ -1,18 +1,17 @@
 package view;
 
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
+
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import controller.Controller;
+import model.Settings;
 import model.Sound;
 
-import java.awt.Dimension;
 import java.awt.Component;
 import java.awt.Color;
 import javax.swing.JLabel;
@@ -32,14 +31,15 @@ import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.UIManager;
-import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.JToggleButton;
+import javax.swing.JPasswordField;
 
 public class ApplicationView extends JFrame {
 	private static Controller ctrl;
@@ -53,7 +53,7 @@ public class ApplicationView extends JFrame {
 				try {
 					ctrl = new Controller();
 					ApplicationView frame = new ApplicationView();
-					
+
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -66,7 +66,6 @@ public class ApplicationView extends JFrame {
 	 * Create the frame.
 	 */
 	public ApplicationView() {
-		setUndecorated(true);
 		setTitle("Max!");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 900, 550);
@@ -88,8 +87,7 @@ public class ApplicationView extends JFrame {
 		panelHome.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				updateBar(barHome);
-				updateScreen(homeScreen);
+				NavigateTo(homeScreen);
 			}
 		});
 		panelHome.setBackground(Color.DARK_GRAY);
@@ -118,8 +116,7 @@ public class ApplicationView extends JFrame {
 		panelSounds.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				updateBar(barSounds);
-				updateScreen(soundsScreen);
+				NavigateTo(soundsScreen);
 			}
 		});
 		panelSounds.setLayout(null);
@@ -147,8 +144,7 @@ public class ApplicationView extends JFrame {
 		panelHistory.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				updateBar(barHistory);
-				updateScreen(historyScreen);
+				NavigateTo(historyScreen);
 			}
 		});
 		panelHistory.setLayout(null);
@@ -176,8 +172,16 @@ public class ApplicationView extends JFrame {
 		panelSettings.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				updateBar(barSettings);
-				updateScreen(settingsScreen);
+				NavigateTo(settingsScreen);
+				//Load settings
+				Settings settings = ctrl.GetSettings();
+				if (settings != null) {
+					userEmail.setText(settings.getEmailAddress());
+					//Set threshold
+					notificationCheckBox.setSelected(settings.isNotifyByEmail());
+					emailKey.setText(settings.getEmailKey());
+				}
+				
 			}
 		});
 		panelSettings.setLayout(null);
@@ -222,7 +226,7 @@ public class ApplicationView extends JFrame {
 				playIcon.setVisible(false);
 				stopIcon.setVisible(true);
 				playStatus.setText("En cours...");
-				
+
 				homeScreen.repaint();
 				ctrl.Record();
 			}
@@ -247,17 +251,17 @@ public class ApplicationView extends JFrame {
 				if (n == JOptionPane.NO_OPTION) {
 					return;
 				}
-				
+
 				ctrl.StopRecord();
-				JOptionPane.showMessageDialog(global,
-						"L'enregistrement est fini ! Pour voir les détails, veuillez cliquer sur l'onglet \"Historique\" dans le menu de gauche.");
 
 				stopIcon.setVisible(false);
 				playIcon.setVisible(true);
 				playStatus.setText("Commencer");
-				
+
 				homeScreen.repaint();
 				
+				NavigateTo(historyScreen);
+
 			}
 		});
 		stopIcon.setVisible(false);
@@ -307,7 +311,7 @@ public class ApplicationView extends JFrame {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				JFileChooser j = new JFileChooser();
-				j.setFileFilter(new FileNameExtensionFilter("*.wav","wav"));
+				j.setFileFilter(new FileNameExtensionFilter("*.wav", "wav"));
 				int r = j.showSaveDialog(null);
 				// if the user selects a file
 				if (r == JFileChooser.APPROVE_OPTION) {
@@ -329,11 +333,9 @@ public class ApplicationView extends JFrame {
 		addSoundButton.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		soundsScreen.add(addSoundButton);
 
-
 		soundsTable = new JTable();
 		reloadSoundTable();
-		
-		
+
 		scrollPane = new JScrollPane(soundsTable);
 		scrollPane.setBounds(0, 80, 720, 350);
 		scrollPane.setBackground(Color.WHITE);
@@ -352,6 +354,58 @@ public class ApplicationView extends JFrame {
 		settingsScreen.setBounds(180, 120, 720, 430);
 		global.add(settingsScreen);
 		settingsScreen.setLayout(null);
+		
+		settingsTitle = new JLabel("Param\u00E8tres");
+		settingsTitle.setBounds(0, 0, 186, 39);
+		settingsTitle.setFont(new Font("Tahoma", Font.BOLD, 32));
+		settingsScreen.add(settingsTitle);
+		
+		emailLabel = new JLabel("Email :");
+		emailLabel.setFont(new Font("Tahoma", Font.BOLD, 24));
+		emailLabel.setBounds(0, 70, 82, 29);
+		settingsScreen.add(emailLabel);
+		
+		userEmail = new JTextField();
+		userEmail.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		userEmail.setBackground(Color.WHITE);
+		userEmail.setBounds(200, 70, 350, 28);
+		settingsScreen.add(userEmail);
+		userEmail.setColumns(10);
+		
+		JLabel notifyLabel = new JLabel("Notification :");
+		notifyLabel.setFont(new Font("Tahoma", Font.BOLD, 24));
+		notifyLabel.setBounds(0, 120, 157, 29);
+		settingsScreen.add(notifyLabel);
+		
+		notificationCheckBox = new JCheckBox("");
+		notificationCheckBox.setBackground(Color.WHITE);
+		notificationCheckBox.setBounds(200, 125, 93, 21);
+		settingsScreen.add(notificationCheckBox);
+		
+		keyLabel = new JLabel("Cl\u00E9 :");
+		keyLabel.setFont(new Font("Tahoma", Font.BOLD, 24));
+		keyLabel.setBounds(0, 170, 54, 29);
+		settingsScreen.add(keyLabel);
+		
+		emailKey = new JPasswordField();
+		emailKey.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		emailKey.setBounds(150, 170, 400, 28);
+		settingsScreen.add(emailKey);
+		
+		saveSettingsButton = new JButton("Enregistrer ces param\u00E8tres");
+		saveSettingsButton.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				//Don't forget to set the threshold (0 for now)
+				Settings settings = new Settings(userEmail.getText(), 0, notificationCheckBox.isSelected(), String.valueOf(emailKey.getPassword()));
+				
+				ctrl.SaveSettings(settings);
+				JOptionPane.showMessageDialog(global, "Les paramètres ont bien été sauvegardés.");
+			}
+		});
+		saveSettingsButton.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		saveSettingsButton.setBounds(200, 304, 350, 39);
+		settingsScreen.add(saveSettingsButton);
 	}
 
 	public void updateBar(JLabel label) {
@@ -375,12 +429,11 @@ public class ApplicationView extends JFrame {
 	}
 
 	public void reloadSoundTable() {
-		
+
 		List<Sound> sounds = ctrl.GetSounds();
 
-		
 		Object[][] rows = new Object[sounds.size()][4];
-		
+
 		System.out.println(sounds.size());
 
 		for (int i = 0; i < sounds.size(); i++) {
@@ -388,118 +441,127 @@ public class ApplicationView extends JFrame {
 			rows[i][1] = sounds.get(i).getFilePath();
 			rows[i][2] = "ecouter";
 			rows[i][3] = "supprimer";
-			
+
 		}
-		DefaultTableModel model = new DefaultTableModel(rows,new Object[]{"Date", "Nom", "Ecouter", "Supprimer"}) {
+		DefaultTableModel model = new DefaultTableModel(rows, new Object[] { "Date", "Nom", "Ecouter", "Supprimer" }) {
 			@Override
-            public void setValueAt(Object aValue, int row, int column) {
-                if (column == 3 && (aValue instanceof Boolean)) {
-                    boolean pushed = (boolean) aValue;
-                    if (pushed) {
-                        // delete sound
-                    	ctrl.DeleteSound(this.getValueAt(row, 1).toString());
-                    	reloadSoundTable();
-                    }
-                }
-                if (column == 2 && (aValue instanceof Boolean)) {
-                    boolean pushed = (boolean) aValue;
-                    if (pushed) {
+			public void setValueAt(Object aValue, int row, int column) {
+				if (column == 3 && (aValue instanceof Boolean)) {
+					boolean pushed = (boolean) aValue;
+					if (pushed) {
+						// delete sound
+						ctrl.DeleteSound(this.getValueAt(row, 1).toString());
+						reloadSoundTable();
+					}
+				}
+				if (column == 2 && (aValue instanceof Boolean)) {
+					boolean pushed = (boolean) aValue;
+					if (pushed) {
 						try {
 							ctrl.PlaySound(this.getValueAt(row, 1).toString());
 						} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
-                    }
-                }
-            }
+					}
+				}
+			}
 		};
 		soundsTable.setModel(model);
 		soundsTable.getColumn("Ecouter").setCellRenderer(new ButtonRenderer());
 		soundsTable.getColumn("Ecouter").setCellEditor(new SoundButton(new JCheckBox()));
-		
+
 		soundsTable.getColumn("Supprimer").setCellRenderer(new ButtonRenderer());
 		soundsTable.getColumn("Supprimer").setCellEditor(new SoundButton(new JCheckBox()));
-		
+
 		soundsTable.setPreferredScrollableViewportSize(soundsTable.getPreferredSize());
-		
+
 		soundsTable.getColumnModel().getColumn(2).setPreferredWidth(100);
 		soundsTable.getColumnModel().getColumn(3).setPreferredWidth(100);
 
 		soundsScreen.repaint();
-		
+
+	}
+	
+	public void NavigateTo(JPanel screen) {
+		JLabel[] bar = {barHome, barSounds, barHistory, barSettings};
+		JPanel[] screens = {homeScreen, soundsScreen, historyScreen, settingsScreen};
+		for (int i=0; i<screens.length; i++) {
+			if (screen.equals(screens[i]))
+			{
+				updateBar(bar[i]);
+				updateScreen(screens[i]);
+			}
+		}
 	}
 
 	class ButtonRenderer extends JButton implements TableCellRenderer {
 
-	    public ButtonRenderer() {
-	        setOpaque(true);
-	    }
+		public ButtonRenderer() {
+			setOpaque(true);
+		}
 
-	    @Override
-	    public Component getTableCellRendererComponent(JTable table, Object value,
-	            boolean isSelected, boolean hasFocus, int row, int column) {
-	        if (isSelected) {
-	            setForeground(table.getSelectionForeground());
-	            setBackground(table.getSelectionBackground());
-	        } else {
-	            setForeground(table.getForeground());
-	            setBackground(UIManager.getColor("Button.background"));
-	        }
-	        setText((value == null) ? "" : value.toString());
-	        return this;
-	    }
+		@Override
+		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
+				int row, int column) {
+			if (isSelected) {
+				setForeground(table.getSelectionForeground());
+				setBackground(table.getSelectionBackground());
+			} else {
+				setForeground(table.getForeground());
+				setBackground(UIManager.getColor("Button.background"));
+			}
+			setText((value == null) ? "" : value.toString());
+			return this;
+		}
 	}
 
 	class SoundButton extends DefaultCellEditor {
 
-	    protected JButton button;
-	    private String label;
-	    private boolean isPushed;
+		protected JButton button;
+		private String label;
+		private boolean isPushed;
 
-	    public SoundButton(JCheckBox checkBox) {
-	        super(checkBox);
-	        button = new JButton();
-	        button.setOpaque(true);
-	        button.addActionListener(new ActionListener() {
-	            @Override
-	            public void actionPerformed(ActionEvent e) {
-	                fireEditingStopped();
-	            }
-	        });
-	    }
+		public SoundButton(JCheckBox checkBox) {
+			super(checkBox);
+			button = new JButton();
+			button.setOpaque(true);
+			button.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					fireEditingStopped();
+				}
+			});
+		}
 
-	    @Override
-	    public Component getTableCellEditorComponent(JTable table, Object value,
-	            boolean isSelected, int row, int column) {
-	        if (isSelected) {
-	            button.setForeground(table.getSelectionForeground());
-	            button.setBackground(table.getSelectionBackground());
-	        } else {
-	            button.setForeground(table.getForeground());
-	            button.setBackground(table.getBackground());
-	        }
-	        label = (value == null) ? "" : value.toString();
-	        button.setText(label);
-	        isPushed = true;
-	        return button;
-	    }
+		@Override
+		public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row,
+				int column) {
+			if (isSelected) {
+				button.setForeground(table.getSelectionForeground());
+				button.setBackground(table.getSelectionBackground());
+			} else {
+				button.setForeground(table.getForeground());
+				button.setBackground(table.getBackground());
+			}
+			label = (value == null) ? "" : value.toString();
+			button.setText(label);
+			isPushed = true;
+			return button;
+		}
 
-	    @Override
-	    public Object getCellEditorValue() {
-	        
-	        return isPushed;
-	    }
+		@Override
+		public Object getCellEditorValue() {
 
-	    @Override
-	    public boolean stopCellEditing() {
-	        isPushed = false;
-	        return super.stopCellEditing();
-	    }
+			return isPushed;
+		}
+
+		@Override
+		public boolean stopCellEditing() {
+			isPushed = false;
+			return super.stopCellEditing();
+		}
 	}
-
-
-
 
 	/**
 	 * Declare variables
@@ -534,4 +596,11 @@ public class ApplicationView extends JFrame {
 	private JPanel settingsScreen;
 	private JTable soundsTable;
 	private JScrollPane scrollPane;
+	private JLabel settingsTitle;
+	private JLabel emailLabel;
+	private JTextField userEmail;
+	private JCheckBox notificationCheckBox;
+	private JLabel keyLabel;
+	private JPasswordField emailKey;
+	private JButton saveSettingsButton;
 }

@@ -49,5 +49,19 @@ public class Database {
 		}
 		System.out.println( "Created table RECORDS successfully" );
     }
+    
+    public void CreateTableSettings() {
+    	String query = "CREATE TABLE IF NOT EXISTS SETTINGS ( EMAIL TEXT, THRESHOLD REAL, NOTIFY INT, EMAIL_KEY TEXT )";
+
+		try ( Connection conn = ds.getConnection();
+		     Statement stmt = conn.createStatement(); ) {
+		   int rv = stmt.executeUpdate( query );
+		   System.out.println( "executeUpdate() returned " + rv );		   
+		} catch ( SQLException e ) {
+		   e.printStackTrace();
+		   System.exit( 0 );
+		}
+		System.out.println( "Created table RECORDS successfully" );
+    }
 
 }

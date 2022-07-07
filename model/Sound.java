@@ -4,10 +4,9 @@ package model;
 // file using Clip Object
 import java.io.File;
 
+
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.Date;
-import java.util.Scanner;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -116,7 +115,7 @@ public class Sound {
 
 	private String GetFilename() {
 		String res = "";
-		if (this.filePath.isBlank() || this.filePath.isEmpty()) {
+		if (this.filePath.contentEquals("") || this.filePath.isEmpty()) {
 			return null;
 		}
 

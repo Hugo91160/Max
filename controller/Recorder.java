@@ -2,6 +2,8 @@ package controller;
 
 import java.io.IOException;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.LineUnavailableException;
@@ -11,6 +13,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 public class Recorder extends Thread {
 	private volatile boolean stopRecord;
 	private static Controller ctrl;
+	private static MailSender mailSender = new MailSender();
 
 	public Recorder() {
         this.stopRecord = false;
@@ -70,10 +73,19 @@ public class Recorder extends Thread {
             	System.out.println("Detected sound");
 				try {
 					ctrl.PlayRandomSound();
+					mailSender.send();
 				} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
+				} catch (AddressException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();					
+				} catch (MessagingException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
+				
+				
             	
             	try {
 					sleep(7000);					

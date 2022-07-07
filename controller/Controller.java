@@ -1,28 +1,29 @@
 package controller;
 
 import java.io.IOException;
+
 import java.util.List;
 import java.util.Random;
 
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.TargetDataLine;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
 import dao.Database;
+import dao.SettingsDao;
 import dao.SoundDao;
 import model.*;
 
 public class Controller {
 	private SoundDao soundDao = new SoundDao();
-	private static List<Sound> sounds;
+	private SettingsDao settingsDao = new SettingsDao();
+	private List<Sound> sounds;
 	private static Recorder recorder = new Recorder();
 
 
 	public Controller() {
 		Database database = new Database();
 		database.CreateTableSounds();
+		database.CreateTableSettings();
 		//database.CreateTableRecords();
 		SetExistingSounds();
 		
@@ -107,13 +108,17 @@ public class Controller {
 	}
 	
 	
+	/*
+	 * Settings function
+	 */
 	
+	public Settings GetSettings() {
+		return settingsDao.GetSettings();
+	}
 	
-	
-	
-	
-	
-	
+	public void SaveSettings(Settings settings) {
+		settingsDao.SaveSettings(settings);
+	}
 	
 	
 	

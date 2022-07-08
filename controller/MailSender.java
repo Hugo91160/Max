@@ -12,7 +12,7 @@ public class MailSender {
 	private String port = "465";
 	private String from = "noreply.maxlechien@gmail.com";
 	private String subject = "[Max!] Détection d'un aboiement";
-	private String text = "Votre chien vient d'aboyer. \r\n \r\n Max!";
+	private String text = "Votre chien vient d'aboyer. \r\n \r\nMax!";
 	private SettingsDao settingsDao = new SettingsDao();
 	
 	public void send() throws AddressException, MessagingException {

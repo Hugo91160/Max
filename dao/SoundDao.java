@@ -64,7 +64,6 @@ public class SoundDao {
 			Class.forName("org.sqlite.JDBC");
 			c = DriverManager.getConnection("jdbc:sqlite:test.db");
 			c.setAutoCommit(false);
-			System.out.println("Opened database successfully");
 
 			stmt = c.createStatement();
 			ResultSet rs = stmt.executeQuery( "SELECT * FROM SOUNDS;" );
@@ -72,8 +71,6 @@ public class SoundDao {
 			while ( rs.next() ) {
 				Sound sound = new Sound(rs.getString("FILEPATH"));
 				result.add(sound);
-		        
-		        System.out.println("FilePath : " + sound.getFilePath());
 			}
 			rs.close();
 			stmt.close();
@@ -82,7 +79,6 @@ public class SoundDao {
 			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
 			System.exit(0);
 		}
-		System.out.println("Operation done successfully");
 		return result;
 	}
 	

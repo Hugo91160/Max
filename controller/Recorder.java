@@ -10,6 +10,8 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.TargetDataLine;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
+import model.Settings;
+
 public class Recorder extends Thread {
 	private volatile boolean stopRecord;
 	private static Controller ctrl;
@@ -73,7 +75,10 @@ public class Recorder extends Thread {
             	System.out.println("Detected sound");
 				try {
 					ctrl.PlayRandomSound();
-					mailSender.send();
+					Settings settings = ctrl.GetSettings();
+					if (settings.isNotifyByEmail()) {
+						mailSender.send();
+					}	
 				} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -97,7 +102,7 @@ public class Recorder extends Thread {
             
 		}
 		line.close();
-		System.out.println("stopped");
+		System.out.println("Recording has been stopped.");
 		
 	}
 	

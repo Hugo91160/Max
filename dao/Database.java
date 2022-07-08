@@ -28,7 +28,6 @@ public class Database {
 		try ( Connection conn = ds.getConnection();
 		     Statement stmt = conn.createStatement(); ) {
 		   int rv = stmt.executeUpdate( query );
-		   System.out.println( "executeUpdate() returned " + rv );
 		} catch ( SQLException e ) {
 		   e.printStackTrace();
 		   System.exit( 0 );
@@ -42,7 +41,6 @@ public class Database {
 		try ( Connection conn = ds.getConnection();
 		     Statement stmt = conn.createStatement(); ) {
 		   int rv = stmt.executeUpdate( query );
-		   System.out.println( "executeUpdate() returned " + rv );
 		} catch ( SQLException e ) {
 		   e.printStackTrace();
 		   System.exit( 0 );
@@ -55,8 +53,7 @@ public class Database {
 
 		try ( Connection conn = ds.getConnection();
 		     Statement stmt = conn.createStatement(); ) {
-		   int rv = stmt.executeUpdate( query );
-		   System.out.println( "executeUpdate() returned " + rv );		   
+		   int rv = stmt.executeUpdate( query );	   
 		} catch ( SQLException e ) {
 		   e.printStackTrace();
 		   System.exit( 0 );

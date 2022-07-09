@@ -40,6 +40,16 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.JPasswordField;
+import javax.swing.SwingConstants;
+import javax.swing.BoxLayout;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.ColumnSpec;
+import com.jgoodies.forms.layout.RowSpec;
 
 public class ApplicationView extends JFrame {
 	private static Controller ctrl;
@@ -68,7 +78,7 @@ public class ApplicationView extends JFrame {
 	public ApplicationView() {
 		setTitle("Max!");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 900, 550);
+		setBounds(100, 100, 916, 550);
 		getContentPane().setLayout(null);
 
 		global = new JPanel();
@@ -207,10 +217,39 @@ public class ApplicationView extends JFrame {
 
 		homeScreen = new JPanel();
 		homeScreen.setBackground(Color.WHITE);
-		homeScreen.setBounds(180, 120, 720, 430);
+		homeScreen.setBounds(180, 0, 720, 510);
 		global.add(homeScreen);
 		homeScreen.setLayout(null);
-
+		
+		homeHeader = new JPanel();
+		homeHeader.setBounds(0, 0, 720, 120);
+		homeScreen.add(homeHeader);
+		GridBagLayout gbl_homeHeader = new GridBagLayout();
+		gbl_homeHeader.columnWidths = new int[]{720, 0};
+		gbl_homeHeader.rowHeights = new int[]{120, 0};
+		gbl_homeHeader.columnWeights = new double[]{0.0, Double.MIN_VALUE};
+		gbl_homeHeader.rowWeights = new double[]{0.0, Double.MIN_VALUE};
+		homeHeader.setLayout(gbl_homeHeader);
+		
+		playStatus = new JLabel("Commencer");
+		playStatus.setAlignmentX(Component.CENTER_ALIGNMENT);
+		playStatus.setFont(new Font("Tahoma", Font.BOLD, 36));
+		GridBagConstraints gbc_playStatus = new GridBagConstraints();
+		gbc_playStatus.gridx = 0;
+		gbc_playStatus.gridy = 0;
+		homeHeader.add(playStatus, gbc_playStatus);
+		
+		JPanel homeContent = new JPanel();
+		homeContent.setBackground(Color.WHITE);
+		homeContent.setBounds(0, 120, 720, 390);
+		homeScreen.add(homeContent);
+		GridBagLayout gbl_homeContent = new GridBagLayout();
+		gbl_homeContent.columnWidths = new int[]{310, 100, 0};
+		gbl_homeContent.rowHeights = new int[]{100, 0, 0, 0};
+		gbl_homeContent.columnWeights = new double[]{0.0, 0.0, Double.MIN_VALUE};
+		gbl_homeContent.rowWeights = new double[]{0.0, 0.0, 0.0, Double.MIN_VALUE};
+		homeContent.setLayout(gbl_homeContent);
+		
 		playIcon = new JLabel("");
 		playIcon.addMouseListener(new MouseAdapter() {
 			@Override
@@ -232,15 +271,15 @@ public class ApplicationView extends JFrame {
 			}
 		});
 		playIcon.setIcon(new ImageIcon(ApplicationView.class.getResource("/view/img/play-button-small.png")));
-		playIcon.setBounds(310, 250, 100, 100);
-		homeScreen.add(playIcon);
-
-		playStatus = new JLabel("Commencer");
-		playStatus.setFont(new Font("Tahoma", Font.BOLD, 30));
-		playStatus.setBounds(270, 138, 181, 30);
-		homeScreen.add(playStatus);
-
+		GridBagConstraints gbc_playIcon = new GridBagConstraints();
+		gbc_playIcon.gridwidth = 0;
+		gbc_playIcon.gridheight = 0;
+		gbc_playIcon.gridx = 0;
+		gbc_playIcon.gridy = 0;
+		homeContent.add(playIcon, gbc_playIcon);
+		
 		stopIcon = new JLabel("");
+		stopIcon.setIcon(new ImageIcon(ApplicationView.class.getResource("/view/img/stop-button-small.png")));
 		stopIcon.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -261,52 +300,45 @@ public class ApplicationView extends JFrame {
 				homeScreen.repaint();
 				
 				NavigateTo(historyScreen);
-
 			}
 		});
-		stopIcon.setVisible(false);
-		stopIcon.setIcon(new ImageIcon(ApplicationView.class.getResource("/view/img/stop-button-small.png")));
-		stopIcon.setBounds(310, 250, 100, 100);
-		homeScreen.add(stopIcon);
-
-		header = new JPanel();
-		header.setBounds(180, 0, 720, 120);
-		global.add(header);
-		header.setLayout(null);
-
-		exitLabel = new JLabel("");
-		exitLabel.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				Object[] options = { "Oui", "Non" };
-				int n = JOptionPane.showOptionDialog(global, "Etes-vous sûr de vouloir quitter l'application ?",
-						"Fermer l'application", JOptionPane.YES_OPTION, JOptionPane.NO_OPTION, null, options,
-						options[1]);
-				if (n == JOptionPane.YES_OPTION) {
-					System.exit(0);
-				}
-
-			}
-		});
-		header.setLayout(null);
-		exitLabel.setIcon(new ImageIcon(ApplicationView.class.getResource("/view/img/closing.png")));
-		exitLabel.setBounds(680, 45, 30, 30);
-		header.add(exitLabel);
+		GridBagConstraints gbc_stopIcon = new GridBagConstraints();
+		gbc_stopIcon.gridwidth = 0;
+		gbc_stopIcon.gridheight = 0;
+		gbc_stopIcon.gridx = 0;
+		gbc_stopIcon.gridy = 0;
+		homeContent.add(stopIcon, gbc_stopIcon);
 
 		soundsScreen = new JPanel();
 		soundsScreen.setBackground(Color.WHITE);
 		soundsScreen.setVisible(false);
-		soundsScreen.setBounds(180, 120, 720, 430);
+		soundsScreen.setBounds(180, 0, 720, 510);
 		global.add(soundsScreen);
 		soundsScreen.setLayout(null);
+		
+		soundsContent = new JPanel();
+		soundsContent.setBackground(Color.WHITE);
+		soundsContent.setBounds(0, 120, 720, 390);
+		soundsScreen.add(soundsContent);
+		soundsContent.setLayout(null);
+		
+				soundsTable = new JTable();
 
-		JLabel mySoundsLabel = new JLabel("Mes sons:");
-		mySoundsLabel.setBounds(0, 0, 98, 25);
-		mySoundsLabel.setFont(new Font("Tahoma", Font.BOLD, 20));
-		soundsScreen.add(mySoundsLabel);
-
-		JButton addSoundButton = new JButton("Ajouter un son");
-		addSoundButton.setBounds(438, 10, 195, 33);
+		scrollPane = new JScrollPane(soundsTable);
+		scrollPane.setBounds(0, 90, 720, 300);
+		soundsContent.add(scrollPane);
+		scrollPane.setBackground(Color.WHITE);
+		
+		addSoundPanel = new JPanel();
+		addSoundPanel.setBackground(Color.WHITE);
+		addSoundPanel.setBounds(0, 0, 720, 120);
+		soundsContent.add(addSoundPanel);
+		addSoundPanel.setLayout(null);
+		
+		addSoundButton = new JButton("Ajouter un son");
+		addSoundButton.setBounds(243, 25, 228, 40);
+		addSoundButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+		addSoundPanel.add(addSoundButton);
 		addSoundButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -331,68 +363,105 @@ public class ApplicationView extends JFrame {
 			}
 		});
 		addSoundButton.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		soundsScreen.add(addSoundButton);
-
-		soundsTable = new JTable();
-		reloadSoundTable();
-
-		scrollPane = new JScrollPane(soundsTable);
-		scrollPane.setBounds(0, 80, 720, 350);
-		scrollPane.setBackground(Color.WHITE);
-		soundsScreen.add(scrollPane, BorderLayout.CENTER);
+		
+		soundsHeader = new JPanel();
+		soundsHeader.setBounds(0, 0, 720, 120);
+		soundsScreen.add(soundsHeader);
+		GridBagLayout gbl_soundsHeader = new GridBagLayout();
+		gbl_soundsHeader.columnWidths = new int[]{720, 0};
+		gbl_soundsHeader.rowHeights = new int[]{120, 0};
+		gbl_soundsHeader.columnWeights = new double[]{1.0, Double.MIN_VALUE};
+		gbl_soundsHeader.rowWeights = new double[]{0.0, Double.MIN_VALUE};
+		soundsHeader.setLayout(gbl_soundsHeader);
+		
+		soundsHeaderLabel = new JLabel("Mes sons");
+		soundsHeaderLabel.setFont(new Font("Tahoma", Font.BOLD, 36));
+		soundsHeaderLabel.setAlignmentX(0.5f);
+		GridBagConstraints gbc_soundsHeaderLabel = new GridBagConstraints();
+		gbc_soundsHeaderLabel.gridwidth = 0;
+		gbc_soundsHeaderLabel.gridheight = 0;
+		gbc_soundsHeaderLabel.gridx = 0;
+		gbc_soundsHeaderLabel.gridy = 0;
+		soundsHeader.add(soundsHeaderLabel, gbc_soundsHeaderLabel);
 
 		historyScreen = new JPanel();
 		historyScreen.setBackground(Color.WHITE);
 		historyScreen.setVisible(false);
-		historyScreen.setBounds(180, 120, 720, 430);
+		historyScreen.setBounds(180, 0, 720, 510);
 		global.add(historyScreen);
 		historyScreen.setLayout(null);
+		
+		historyHeader = new JPanel();
+		historyHeader.setBounds(0, 0, 720, 120);
+		historyScreen.add(historyHeader);
+		GridBagLayout gbl_historyHeader = new GridBagLayout();
+		gbl_historyHeader.columnWidths = new int[]{337, 46, 0};
+		gbl_historyHeader.rowHeights = new int[]{13, 0};
+		gbl_historyHeader.columnWeights = new double[]{0.0, 0.0, Double.MIN_VALUE};
+		gbl_historyHeader.rowWeights = new double[]{0.0, Double.MIN_VALUE};
+		historyHeader.setLayout(gbl_historyHeader);
+		
+		historyHeaderLabel = new JLabel("Historique");
+		historyHeaderLabel.setFont(new Font("Tahoma", Font.BOLD, 36));
+		GridBagConstraints gbc_historyHeaderLabel = new GridBagConstraints();
+		gbc_historyHeaderLabel.gridwidth = 0;
+		gbc_historyHeaderLabel.gridheight = 0;
+		gbc_historyHeaderLabel.gridx = 0;
+		gbc_historyHeaderLabel.gridy = 0;
+		historyHeader.add(historyHeaderLabel, gbc_historyHeaderLabel);
+		
+		historyContent = new JPanel();
+		historyContent.setBounds(0, 120, 720, 390);
+		historyScreen.add(historyContent);
 
 		settingsScreen = new JPanel();
 		settingsScreen.setBackground(Color.WHITE);
 		settingsScreen.setVisible(false);
-		settingsScreen.setBounds(180, 120, 720, 430);
+		settingsScreen.setBounds(180, 0, 720, 510);
 		global.add(settingsScreen);
 		settingsScreen.setLayout(null);
 		
-		settingsTitle = new JLabel("Param\u00E8tres");
-		settingsTitle.setBounds(0, 0, 186, 39);
-		settingsTitle.setFont(new Font("Tahoma", Font.BOLD, 32));
-		settingsScreen.add(settingsTitle);
+		settingsContent = new JPanel();
+		settingsContent.setBackground(Color.WHITE);
+		settingsContent.setBounds(0, 120, 720, 390);
+		settingsScreen.add(settingsContent);
+		settingsContent.setLayout(null);
 		
 		emailLabel = new JLabel("Email :");
-		emailLabel.setFont(new Font("Tahoma", Font.BOLD, 24));
-		emailLabel.setBounds(0, 70, 82, 29);
-		settingsScreen.add(emailLabel);
+		emailLabel.setBounds(20, 50, 82, 29);
+		settingsContent.add(emailLabel);
+		emailLabel.setFont(new Font("Tahoma", Font.BOLD, 18));
 		
 		userEmail = new JTextField();
+		userEmail.setBounds(220, 50, 350, 28);
+		settingsContent.add(userEmail);
 		userEmail.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		userEmail.setBackground(Color.WHITE);
-		userEmail.setBounds(200, 70, 350, 28);
-		settingsScreen.add(userEmail);
 		userEmail.setColumns(10);
 		
 		JLabel notifyLabel = new JLabel("Notification :");
-		notifyLabel.setFont(new Font("Tahoma", Font.BOLD, 24));
-		notifyLabel.setBounds(0, 120, 157, 29);
-		settingsScreen.add(notifyLabel);
+		notifyLabel.setBounds(20, 100, 157, 29);
+		settingsContent.add(notifyLabel);
+		notifyLabel.setFont(new Font("Tahoma", Font.BOLD, 18));
 		
 		notificationCheckBox = new JCheckBox("");
+		notificationCheckBox.setBounds(220, 104, 21, 21);
+		settingsContent.add(notificationCheckBox);
 		notificationCheckBox.setBackground(Color.WHITE);
-		notificationCheckBox.setBounds(200, 125, 93, 21);
-		settingsScreen.add(notificationCheckBox);
 		
 		keyLabel = new JLabel("Cl\u00E9 :");
-		keyLabel.setFont(new Font("Tahoma", Font.BOLD, 24));
-		keyLabel.setBounds(0, 170, 54, 29);
-		settingsScreen.add(keyLabel);
+		keyLabel.setBounds(20, 150, 54, 29);
+		settingsContent.add(keyLabel);
+		keyLabel.setFont(new Font("Tahoma", Font.BOLD, 18));
 		
 		emailKey = new JPasswordField();
+		emailKey.setBounds(220, 150, 350, 28);
+		settingsContent.add(emailKey);
 		emailKey.setFont(new Font("Tahoma", Font.PLAIN, 18));
-		emailKey.setBounds(150, 170, 400, 28);
-		settingsScreen.add(emailKey);
 		
 		saveSettingsButton = new JButton("Enregistrer ces param\u00E8tres");
+		saveSettingsButton.setBounds(200, 310, 350, 39);
+		settingsContent.add(saveSettingsButton);
 		saveSettingsButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -404,8 +473,28 @@ public class ApplicationView extends JFrame {
 			}
 		});
 		saveSettingsButton.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		saveSettingsButton.setBounds(200, 304, 350, 39);
-		settingsScreen.add(saveSettingsButton);
+		
+		settingsHeader = new JPanel();
+		settingsHeader.setBounds(0, 0, 720, 120);
+		settingsScreen.add(settingsHeader);
+		GridBagLayout gbl_settingsHeader = new GridBagLayout();
+		gbl_settingsHeader.columnWidths = new int[]{210, 0};
+		gbl_settingsHeader.rowHeights = new int[]{44, 0};
+		gbl_settingsHeader.columnWeights = new double[]{0.0, Double.MIN_VALUE};
+		gbl_settingsHeader.rowWeights = new double[]{0.0, Double.MIN_VALUE};
+		settingsHeader.setLayout(gbl_settingsHeader);
+		
+		settingsHeaderLabel = new JLabel("Param\u00E8tres");
+		settingsHeaderLabel.setFont(new Font("Tahoma", Font.BOLD, 36));
+		GridBagConstraints gbc_settingsHeaderLabel = new GridBagConstraints();
+		gbc_settingsHeaderLabel.gridwidth = 0;
+		gbc_settingsHeaderLabel.gridheight = 0;
+		gbc_settingsHeaderLabel.gridx = 0;
+		gbc_settingsHeaderLabel.gridy = 0;
+		settingsHeader.add(settingsHeaderLabel, gbc_settingsHeaderLabel);
+		
+
+		reloadSoundTable();
 	}
 
 	public void updateBar(JLabel label) {
@@ -433,8 +522,6 @@ public class ApplicationView extends JFrame {
 		List<Sound> sounds = ctrl.GetSounds();
 
 		Object[][] rows = new Object[sounds.size()][4];
-
-		System.out.println(sounds.size());
 
 		for (int i = 0; i < sounds.size(); i++) {
 			rows[i][0] = sounds.get(i).getDate();
@@ -586,21 +673,30 @@ public class ApplicationView extends JFrame {
 	private JPanel panelSettings;
 	private JLabel settingsLabel;
 	private JPanel homeScreen;
-	private JLabel playIcon;
-	private JLabel playStatus;
-	private JLabel stopIcon;
-	private JPanel header;
-	private JLabel exitLabel;
 	private JPanel soundsScreen;
 	private JPanel historyScreen;
 	private JPanel settingsScreen;
 	private JTable soundsTable;
 	private JScrollPane scrollPane;
-	private JLabel settingsTitle;
 	private JLabel emailLabel;
 	private JTextField userEmail;
 	private JCheckBox notificationCheckBox;
 	private JLabel keyLabel;
 	private JPasswordField emailKey;
 	private JButton saveSettingsButton;
+	private JPanel homeHeader;
+	private JLabel playStatus;
+	private JLabel playIcon;
+	private JLabel stopIcon;
+	private JPanel soundsHeader;
+	private JLabel soundsHeaderLabel;
+	private JPanel soundsContent;
+	private JButton addSoundButton;
+	private JPanel addSoundPanel;
+	private JPanel historyHeader;
+	private JPanel historyContent;
+	private JLabel historyHeaderLabel;
+	private JPanel settingsContent;
+	private JPanel settingsHeader;
+	private JLabel settingsHeaderLabel;
 }

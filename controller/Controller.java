@@ -16,7 +16,7 @@ import model.*;
 public class Controller {
 	private SoundDao soundDao = new SoundDao();
 	private SettingsDao settingsDao = new SettingsDao();
-	private List<Sound> sounds;
+	private static List<Sound> sounds;
 	private static Recorder recorder = new Recorder();
 
 
@@ -36,7 +36,7 @@ public class Controller {
 	 */
 	
 	private void SetExistingSounds() {
-		this.sounds = soundDao.GetSounds();
+		Controller.sounds = soundDao.GetSounds();
 	}
 	
 	public void AddSound(String filePath) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
@@ -49,7 +49,7 @@ public class Controller {
 		Sound s;
 		s = new Sound(filePath);
 		soundDao.AddSound(s);
-		this.sounds.add(s);
+		Controller.sounds.add(s);
 	}
 	
 	public void PlaySound(String filePath) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
@@ -62,14 +62,14 @@ public class Controller {
 	}
 	
 	public void PlayRandomSound() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
-		if (this.sounds.size() == 0) {
+		if (Controller.sounds.size() == 0) {
 			System.out.println("Warning: no sounds given.");
 			return;
 		}		
 		
 		Random rand = new Random();
-		int index = rand.nextInt(this.sounds.size());
-		this.sounds.get(index).resumeAudio();
+		int index = rand.nextInt(Controller.sounds.size());
+		Controller.sounds.get(index).resumeAudio();
 
 	}
 	
@@ -90,7 +90,7 @@ public class Controller {
 	
 	public List<Sound> GetSounds() {
 		
-		return this.sounds;
+		return Controller.sounds;
 	}
 	
 	

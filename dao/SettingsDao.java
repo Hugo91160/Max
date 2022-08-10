@@ -12,6 +12,7 @@ import model.Settings;
 
 public class SettingsDao {
 	public Database db = new Database();
+	public Settings defaultSettings = new Settings("", 0.5f, false, "");
 	
 	public Settings GetSettings() {
 		List<Settings> result = new ArrayList<Settings>();
@@ -20,13 +21,13 @@ public class SettingsDao {
 		Statement stmt = null;
 		try {
 			Class.forName("org.sqlite.JDBC");
-			c = DriverManager.getConnection("jdbc:sqlite:test.db");
+			c = DriverManager.getConnection("jdbc:sqlite:Max.db");
 
 			stmt = c.createStatement();
 			ResultSet rs = stmt.executeQuery( "SELECT * FROM SETTINGS;" );
 	      
 			while ( rs.next() ) {
-				Settings settings = new Settings(rs.getString("EMAIL"), rs.getInt("THRESHOLD"), rs.getBoolean("NOTIFY"), rs.getString("EMAIL_KEY"));
+				Settings settings = new Settings(rs.getString("EMAIL"), rs.getFloat("THRESHOLD"), rs.getBoolean("NOTIFY"), rs.getString("EMAIL_KEY"));
 				result.add(settings);
 			}
 			rs.close();
@@ -38,7 +39,7 @@ public class SettingsDao {
 			System.exit(0);
 		}
 		
-		return result.size() == 0 ? null : result.get(0);
+		return result.size() == 0 ? defaultSettings : result.get(0);
 	}
 	
 	public void SaveSettings(Settings settings) {
@@ -46,7 +47,7 @@ public class SettingsDao {
 		PreparedStatement stmt = null;
 		try {
 			Class.forName("org.sqlite.JDBC");
-			c = DriverManager.getConnection("jdbc:sqlite:test.db");
+			c = DriverManager.getConnection("jdbc:sqlite:Max.db");
 			
 			// If not settings are set yet, we insert a row. Otherwise we rewrite the row.
 			if (GetSettings() == null) {

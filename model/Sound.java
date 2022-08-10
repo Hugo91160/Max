@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 
+import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
@@ -26,12 +27,15 @@ public class Sound {
 	private String filePath;
 	private String fileName;
 	private Date date;
+	private String type;
+	private double durationInSeconds;
 
 	// constructor to initialize streams and clip
 	public Sound(String soundFilePath) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
 		this.filePath = soundFilePath;
 		// create AudioInputStream object
 		audioInputStream = AudioSystem.getAudioInputStream(new File(filePath).getAbsoluteFile());
+		AudioFormat format = audioInputStream.getFormat();
 
 		// create clip reference
 		clip = AudioSystem.getClip();
@@ -42,12 +46,31 @@ public class Sound {
 
 		date = new Date();
 		fileName = this.GetFilename();
-
+		
+		long frames = audioInputStream.getFrameLength();
+		durationInSeconds = (frames+0.0) / format.getFrameRate();
+		
 	}
 
 	/*
 	 * Class methods
 	 */
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public double getDurationInSeconds() {
+		return durationInSeconds;
+	}
+
+	public void setDurationInSeconds(double durationInSeconds) {
+		this.durationInSeconds = durationInSeconds;
+	}
 
 	public Date getDate() {
 		return date;

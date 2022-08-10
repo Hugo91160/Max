@@ -1,11 +1,14 @@
 package model;
 
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+
 public class Settings {
 	private String emailAddress;
 	private float amplitudeThreshold;
 	private boolean notifyByEmail;
 	private String emailKey;
-	
+
 	public Settings(String emailAddress, float amplitudeThreshold, boolean notifyByEmail, String emailKey) {
 		super();
 		this.emailAddress = emailAddress;
@@ -46,5 +49,16 @@ public class Settings {
 		this.emailKey = emailKey;
 	}
 
+	/*
+	 * Checking settings validity
+	 * 
+	 */
+
+	public void validate() throws AddressException {
+		if (this.isNotifyByEmail()) {
+			InternetAddress emailAd = new InternetAddress(this.emailAddress);
+			emailAd.validate();
+		}
+	}
 
 }

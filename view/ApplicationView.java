@@ -1,20 +1,15 @@
 package view;
 
-import java.awt.BorderLayout;
-
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import controller.Controller;
-import model.Settings;
-import model.Sound;
-
 import java.awt.Component;
 import java.awt.Color;
 import javax.swing.JLabel;
+import javax.mail.internet.AddressException;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.DefaultCellEditor;
@@ -33,23 +28,21 @@ import javax.swing.JTable;
 import javax.swing.UIManager;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
+
+import controller.Controller;
+import model.Settings;
+import model.Sound;
+import model.Record;
+
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
-import javax.swing.JToggleButton;
 import javax.swing.JPasswordField;
-import javax.swing.SwingConstants;
-import javax.swing.BoxLayout;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
-import java.awt.Insets;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.ColumnSpec;
-import com.jgoodies.forms.layout.RowSpec;
+import javax.swing.JSlider;
 
 public class ApplicationView extends JFrame {
 	private static Controller ctrl;
@@ -63,7 +56,6 @@ public class ApplicationView extends JFrame {
 				try {
 					ctrl = new Controller();
 					ApplicationView frame = new ApplicationView();
-
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -86,6 +78,62 @@ public class ApplicationView extends JFrame {
 		global.setBounds(0, 0, 900, 550);
 		getContentPane().add(global);
 		global.setLayout(null);
+
+		historyScreen = new JPanel();
+		historyScreen.setBackground(Color.WHITE);
+		historyScreen.setVisible(false);
+		historyScreen.setBounds(180, 0, 720, 510);
+		global.add(historyScreen);
+		historyScreen.setLayout(null);
+
+		historyHeader = new JPanel();
+		historyHeader.setBounds(0, 0, 720, 120);
+		historyScreen.add(historyHeader);
+		GridBagLayout gbl_historyHeader = new GridBagLayout();
+		gbl_historyHeader.columnWidths = new int[] { 337, 46, 0 };
+		gbl_historyHeader.rowHeights = new int[] { 13, 0 };
+		gbl_historyHeader.columnWeights = new double[] { 0.0, 0.0, Double.MIN_VALUE };
+		gbl_historyHeader.rowWeights = new double[] { 0.0, Double.MIN_VALUE };
+		historyHeader.setLayout(gbl_historyHeader);
+
+		historyHeaderLabel = new JLabel("Historique");
+		historyHeaderLabel.setFont(new Font("Tahoma", Font.BOLD, 36));
+		GridBagConstraints gbc_historyHeaderLabel = new GridBagConstraints();
+		gbc_historyHeaderLabel.gridwidth = 0;
+		gbc_historyHeaderLabel.gridheight = 0;
+		gbc_historyHeaderLabel.gridx = 0;
+		gbc_historyHeaderLabel.gridy = 0;
+		historyHeader.add(historyHeaderLabel, gbc_historyHeaderLabel);
+
+		historyContent = new JPanel();
+		historyContent.setBounds(0, 120, 720, 390);
+		historyScreen.add(historyContent);
+		historyContent.setLayout(null);
+
+		historyScrollPanel = new JScrollPane();
+		historyScrollPanel.setBounds(0, 0, 720, 390);
+		historyContent.add(historyScrollPanel);
+
+		recordsTable = new JTable();
+		recordsTable.setModel(new DefaultTableModel(new Object[][] {},
+				new String[] { "Date de d\u00E9but", "Date de fin", "Nombre d'aboiements" }) {
+			Class[] columnTypes = new Class[] { String.class, String.class, Integer.class };
+
+			public Class getColumnClass(int columnIndex) {
+				return columnTypes[columnIndex];
+			}
+
+			boolean[] columnEditables = new boolean[] { false, false, false };
+
+			public boolean isCellEditable(int row, int column) {
+				return columnEditables[column];
+			}
+		});
+		recordsTable.getColumnModel().getColumn(0).setResizable(false);
+		recordsTable.getColumnModel().getColumn(1).setResizable(false);
+		recordsTable.getColumnModel().getColumn(2).setResizable(false);
+		recordsTable.getColumnModel().getColumn(2).setPreferredWidth(123);
+		historyScrollPanel.setViewportView(recordsTable);
 
 		sideBar = new JPanel();
 		sideBar.setBackground(Color.DARK_GRAY);
@@ -183,15 +231,16 @@ public class ApplicationView extends JFrame {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				NavigateTo(settingsScreen);
-				//Load settings
+				// Load settings
 				Settings settings = ctrl.GetSettings();
 				if (settings != null) {
 					userEmail.setText(settings.getEmailAddress());
-					//Set threshold
+					// Set threshold
 					notificationCheckBox.setSelected(settings.isNotifyByEmail());
 					emailKey.setText(settings.getEmailKey());
+					amplitudeInput.setValue((int) (settings.getAmplitudeThreshold() * 100));
 				}
-				
+
 			}
 		});
 		panelSettings.setLayout(null);
@@ -220,17 +269,17 @@ public class ApplicationView extends JFrame {
 		homeScreen.setBounds(180, 0, 720, 510);
 		global.add(homeScreen);
 		homeScreen.setLayout(null);
-		
+
 		homeHeader = new JPanel();
 		homeHeader.setBounds(0, 0, 720, 120);
 		homeScreen.add(homeHeader);
 		GridBagLayout gbl_homeHeader = new GridBagLayout();
-		gbl_homeHeader.columnWidths = new int[]{720, 0};
-		gbl_homeHeader.rowHeights = new int[]{120, 0};
-		gbl_homeHeader.columnWeights = new double[]{0.0, Double.MIN_VALUE};
-		gbl_homeHeader.rowWeights = new double[]{0.0, Double.MIN_VALUE};
+		gbl_homeHeader.columnWidths = new int[] { 720, 0 };
+		gbl_homeHeader.rowHeights = new int[] { 120, 0 };
+		gbl_homeHeader.columnWeights = new double[] { 0.0, Double.MIN_VALUE };
+		gbl_homeHeader.rowWeights = new double[] { 0.0, Double.MIN_VALUE };
 		homeHeader.setLayout(gbl_homeHeader);
-		
+
 		playStatus = new JLabel("Commencer");
 		playStatus.setAlignmentX(Component.CENTER_ALIGNMENT);
 		playStatus.setFont(new Font("Tahoma", Font.BOLD, 36));
@@ -238,30 +287,22 @@ public class ApplicationView extends JFrame {
 		gbc_playStatus.gridx = 0;
 		gbc_playStatus.gridy = 0;
 		homeHeader.add(playStatus, gbc_playStatus);
-		
-		JPanel homeContent = new JPanel();
+
+		homeContent = new JPanel();
 		homeContent.setBackground(Color.WHITE);
 		homeContent.setBounds(0, 120, 720, 390);
 		homeScreen.add(homeContent);
 		GridBagLayout gbl_homeContent = new GridBagLayout();
-		gbl_homeContent.columnWidths = new int[]{310, 100, 0};
-		gbl_homeContent.rowHeights = new int[]{100, 0, 0, 0};
-		gbl_homeContent.columnWeights = new double[]{0.0, 0.0, Double.MIN_VALUE};
-		gbl_homeContent.rowWeights = new double[]{0.0, 0.0, 0.0, Double.MIN_VALUE};
+		gbl_homeContent.columnWidths = new int[] { 310, 100, 0 };
+		gbl_homeContent.rowHeights = new int[] { 100, 0, 0, 0 };
+		gbl_homeContent.columnWeights = new double[] { 0.0, 0.0, Double.MIN_VALUE };
+		gbl_homeContent.rowWeights = new double[] { 0.0, 0.0, 0.0, Double.MIN_VALUE };
 		homeContent.setLayout(gbl_homeContent);
-		
+
 		playIcon = new JLabel("");
 		playIcon.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				Object[] options = { "Oui", "Non" };
-				int n = JOptionPane.showOptionDialog(global,
-						"L'enregistrement est sur le point de démarrer. Voulez-vous continuer ?", "Lancer Max!",
-						JOptionPane.YES_OPTION, JOptionPane.NO_OPTION, null, options, options[1]);
-				if (n == JOptionPane.NO_OPTION) {
-					return;
-				}
-
 				playIcon.setVisible(false);
 				stopIcon.setVisible(true);
 				playStatus.setText("En cours...");
@@ -277,20 +318,12 @@ public class ApplicationView extends JFrame {
 		gbc_playIcon.gridx = 0;
 		gbc_playIcon.gridy = 0;
 		homeContent.add(playIcon, gbc_playIcon);
-		
+
 		stopIcon = new JLabel("");
 		stopIcon.setIcon(new ImageIcon(ApplicationView.class.getResource("/view/img/stop-button-small.png")));
 		stopIcon.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				Object[] options = { "Oui", "Non" };
-				int n = JOptionPane.showOptionDialog(global, "Voulez-vous arrêter l'enregistrement ?",
-						"Arrêter enregistrement", JOptionPane.YES_OPTION, JOptionPane.NO_OPTION, null, options,
-						options[1]);
-				if (n == JOptionPane.NO_OPTION) {
-					return;
-				}
-
 				ctrl.StopRecord();
 
 				stopIcon.setVisible(false);
@@ -299,6 +332,8 @@ public class ApplicationView extends JFrame {
 
 				homeScreen.repaint();
 				
+				reloadRecordsTable();
+
 				NavigateTo(historyScreen);
 			}
 		});
@@ -315,26 +350,26 @@ public class ApplicationView extends JFrame {
 		soundsScreen.setBounds(180, 0, 720, 510);
 		global.add(soundsScreen);
 		soundsScreen.setLayout(null);
-		
+
 		soundsContent = new JPanel();
 		soundsContent.setBackground(Color.WHITE);
 		soundsContent.setBounds(0, 120, 720, 390);
 		soundsScreen.add(soundsContent);
 		soundsContent.setLayout(null);
-		
-				soundsTable = new JTable();
+
+		soundsTable = new JTable();
 
 		scrollPane = new JScrollPane(soundsTable);
 		scrollPane.setBounds(0, 90, 720, 300);
 		soundsContent.add(scrollPane);
 		scrollPane.setBackground(Color.WHITE);
-		
+
 		addSoundPanel = new JPanel();
 		addSoundPanel.setBackground(Color.WHITE);
 		addSoundPanel.setBounds(0, 0, 720, 120);
 		soundsContent.add(addSoundPanel);
 		addSoundPanel.setLayout(null);
-		
+
 		addSoundButton = new JButton("Ajouter un son");
 		addSoundButton.setBounds(243, 25, 228, 40);
 		addSoundButton.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -363,17 +398,17 @@ public class ApplicationView extends JFrame {
 			}
 		});
 		addSoundButton.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		
+
 		soundsHeader = new JPanel();
 		soundsHeader.setBounds(0, 0, 720, 120);
 		soundsScreen.add(soundsHeader);
 		GridBagLayout gbl_soundsHeader = new GridBagLayout();
-		gbl_soundsHeader.columnWidths = new int[]{720, 0};
-		gbl_soundsHeader.rowHeights = new int[]{120, 0};
-		gbl_soundsHeader.columnWeights = new double[]{1.0, Double.MIN_VALUE};
-		gbl_soundsHeader.rowWeights = new double[]{0.0, Double.MIN_VALUE};
+		gbl_soundsHeader.columnWidths = new int[] { 720, 0 };
+		gbl_soundsHeader.rowHeights = new int[] { 120, 0 };
+		gbl_soundsHeader.columnWeights = new double[] { 1.0, Double.MIN_VALUE };
+		gbl_soundsHeader.rowWeights = new double[] { 0.0, Double.MIN_VALUE };
 		soundsHeader.setLayout(gbl_soundsHeader);
-		
+
 		soundsHeaderLabel = new JLabel("Mes sons");
 		soundsHeaderLabel.setFont(new Font("Tahoma", Font.BOLD, 36));
 		soundsHeaderLabel.setAlignmentX(0.5f);
@@ -384,106 +419,101 @@ public class ApplicationView extends JFrame {
 		gbc_soundsHeaderLabel.gridy = 0;
 		soundsHeader.add(soundsHeaderLabel, gbc_soundsHeaderLabel);
 
-		historyScreen = new JPanel();
-		historyScreen.setBackground(Color.WHITE);
-		historyScreen.setVisible(false);
-		historyScreen.setBounds(180, 0, 720, 510);
-		global.add(historyScreen);
-		historyScreen.setLayout(null);
-		
-		historyHeader = new JPanel();
-		historyHeader.setBounds(0, 0, 720, 120);
-		historyScreen.add(historyHeader);
-		GridBagLayout gbl_historyHeader = new GridBagLayout();
-		gbl_historyHeader.columnWidths = new int[]{337, 46, 0};
-		gbl_historyHeader.rowHeights = new int[]{13, 0};
-		gbl_historyHeader.columnWeights = new double[]{0.0, 0.0, Double.MIN_VALUE};
-		gbl_historyHeader.rowWeights = new double[]{0.0, Double.MIN_VALUE};
-		historyHeader.setLayout(gbl_historyHeader);
-		
-		historyHeaderLabel = new JLabel("Historique");
-		historyHeaderLabel.setFont(new Font("Tahoma", Font.BOLD, 36));
-		GridBagConstraints gbc_historyHeaderLabel = new GridBagConstraints();
-		gbc_historyHeaderLabel.gridwidth = 0;
-		gbc_historyHeaderLabel.gridheight = 0;
-		gbc_historyHeaderLabel.gridx = 0;
-		gbc_historyHeaderLabel.gridy = 0;
-		historyHeader.add(historyHeaderLabel, gbc_historyHeaderLabel);
-		
-		historyContent = new JPanel();
-		historyContent.setBounds(0, 120, 720, 390);
-		historyScreen.add(historyContent);
-
 		settingsScreen = new JPanel();
 		settingsScreen.setBackground(Color.WHITE);
 		settingsScreen.setVisible(false);
 		settingsScreen.setBounds(180, 0, 720, 510);
 		global.add(settingsScreen);
 		settingsScreen.setLayout(null);
-		
+
 		settingsContent = new JPanel();
 		settingsContent.setBackground(Color.WHITE);
 		settingsContent.setBounds(0, 120, 720, 390);
 		settingsScreen.add(settingsContent);
 		settingsContent.setLayout(null);
-		
+
 		emailLabel = new JLabel("Email :");
 		emailLabel.setBounds(20, 50, 82, 29);
 		settingsContent.add(emailLabel);
 		emailLabel.setFont(new Font("Tahoma", Font.BOLD, 18));
-		
+
 		userEmail = new JTextField();
 		userEmail.setBounds(220, 50, 350, 28);
 		settingsContent.add(userEmail);
 		userEmail.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		userEmail.setBackground(Color.WHITE);
 		userEmail.setColumns(10);
-		
-		JLabel notifyLabel = new JLabel("Notification :");
+
+		notifyLabel = new JLabel("Notification :");
 		notifyLabel.setBounds(20, 100, 157, 29);
 		settingsContent.add(notifyLabel);
 		notifyLabel.setFont(new Font("Tahoma", Font.BOLD, 18));
-		
+
 		notificationCheckBox = new JCheckBox("");
 		notificationCheckBox.setBounds(220, 104, 21, 21);
 		settingsContent.add(notificationCheckBox);
 		notificationCheckBox.setBackground(Color.WHITE);
-		
+
 		keyLabel = new JLabel("Cl\u00E9 :");
 		keyLabel.setBounds(20, 150, 54, 29);
 		settingsContent.add(keyLabel);
 		keyLabel.setFont(new Font("Tahoma", Font.BOLD, 18));
-		
+
 		emailKey = new JPasswordField();
 		emailKey.setBounds(220, 150, 350, 28);
 		settingsContent.add(emailKey);
 		emailKey.setFont(new Font("Tahoma", Font.PLAIN, 18));
-		
+
 		saveSettingsButton = new JButton("Enregistrer ces param\u00E8tres");
 		saveSettingsButton.setBounds(200, 310, 350, 39);
 		settingsContent.add(saveSettingsButton);
 		saveSettingsButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				//Don't forget to set the threshold (0 for now)
-				Settings settings = new Settings(userEmail.getText(), 0, notificationCheckBox.isSelected(), String.valueOf(emailKey.getPassword()));
-				
-				ctrl.SaveSettings(settings);
-				JOptionPane.showMessageDialog(global, "Les paramètres ont bien été sauvegardés.");
+				// Don't forget to set the threshold (0 for now)
+				float threshold = amplitudeInput.getValue() / 100f;
+				System.out.println("Threshold is : " + threshold);
+				Settings settings = new Settings(userEmail.getText(), threshold, notificationCheckBox.isSelected(),
+						String.valueOf(emailKey.getPassword()));
+				try {
+					ctrl.SaveSettings(settings);
+					JOptionPane.showMessageDialog(global, "Les paramètres ont bien été sauvegardés.");
+				} catch (AddressException error) {
+					JOptionPane.showMessageDialog(null, "L'adresse mail est incorrecte.", "Erreur",
+							JOptionPane.ERROR_MESSAGE);
+				}
+
 			}
 		});
 		saveSettingsButton.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		
+
+		amplitudeInput = new JSlider();
+		amplitudeInput.setBounds(220, 200, 350, 22);
+		settingsContent.add(amplitudeInput);
+
+		amplitudeLabel = new JLabel("Sensibilit\u00E9");
+		amplitudeLabel.setFont(new Font("Tahoma", Font.BOLD, 18));
+		amplitudeLabel.setBounds(20, 200, 132, 29);
+		settingsContent.add(amplitudeLabel);
+
+		sliderMinLabel = new JLabel("peu sensible");
+		sliderMinLabel.setBounds(488, 232, 82, 13);
+		settingsContent.add(sliderMinLabel);
+
+		sliderMaxLabel = new JLabel("tr\u00E8s sensible");
+		sliderMaxLabel.setBounds(220, 232, 99, 13);
+		settingsContent.add(sliderMaxLabel);
+
 		settingsHeader = new JPanel();
 		settingsHeader.setBounds(0, 0, 720, 120);
 		settingsScreen.add(settingsHeader);
 		GridBagLayout gbl_settingsHeader = new GridBagLayout();
-		gbl_settingsHeader.columnWidths = new int[]{210, 0};
-		gbl_settingsHeader.rowHeights = new int[]{44, 0};
-		gbl_settingsHeader.columnWeights = new double[]{0.0, Double.MIN_VALUE};
-		gbl_settingsHeader.rowWeights = new double[]{0.0, Double.MIN_VALUE};
+		gbl_settingsHeader.columnWidths = new int[] { 210, 0 };
+		gbl_settingsHeader.rowHeights = new int[] { 44, 0 };
+		gbl_settingsHeader.columnWeights = new double[] { 0.0, Double.MIN_VALUE };
+		gbl_settingsHeader.rowWeights = new double[] { 0.0, Double.MIN_VALUE };
 		settingsHeader.setLayout(gbl_settingsHeader);
-		
+
 		settingsHeaderLabel = new JLabel("Param\u00E8tres");
 		settingsHeaderLabel.setFont(new Font("Tahoma", Font.BOLD, 36));
 		GridBagConstraints gbc_settingsHeaderLabel = new GridBagConstraints();
@@ -492,9 +522,9 @@ public class ApplicationView extends JFrame {
 		gbc_settingsHeaderLabel.gridx = 0;
 		gbc_settingsHeaderLabel.gridy = 0;
 		settingsHeader.add(settingsHeaderLabel, gbc_settingsHeaderLabel);
-		
 
 		reloadSoundTable();
+		reloadRecordsTable();
 	}
 
 	public void updateBar(JLabel label) {
@@ -569,13 +599,12 @@ public class ApplicationView extends JFrame {
 		soundsScreen.repaint();
 
 	}
-	
+
 	public void NavigateTo(JPanel screen) {
-		JLabel[] bar = {barHome, barSounds, barHistory, barSettings};
-		JPanel[] screens = {homeScreen, soundsScreen, historyScreen, settingsScreen};
-		for (int i=0; i<screens.length; i++) {
-			if (screen.equals(screens[i]))
-			{
+		JLabel[] bar = { barHome, barSounds, barHistory, barSettings };
+		JPanel[] screens = { homeScreen, soundsScreen, historyScreen, settingsScreen };
+		for (int i = 0; i < screens.length; i++) {
+			if (screen.equals(screens[i])) {
 				updateBar(bar[i]);
 				updateScreen(screens[i]);
 			}
@@ -649,6 +678,16 @@ public class ApplicationView extends JFrame {
 			return super.stopCellEditing();
 		}
 	}
+	
+	public void reloadRecordsTable() {
+		List<Record> records = ctrl.GetRecords();
+		DefaultTableModel model = (DefaultTableModel) recordsTable.getModel();
+		for (int i = 0; i<records.size(); i++) {
+			model.addRow(new Object[] {records.get(i).getBeginDate(), records.get(i).getEndDate(), records.get(i).getEvents().size()});
+		}
+		
+		historyScreen.repaint();
+	}
 
 	/**
 	 * Declare variables
@@ -699,4 +738,12 @@ public class ApplicationView extends JFrame {
 	private JPanel settingsContent;
 	private JPanel settingsHeader;
 	private JLabel settingsHeaderLabel;
+	private JPanel homeContent;
+	private JLabel notifyLabel;
+	private JSlider amplitudeInput;
+	private JLabel amplitudeLabel;
+	private JLabel sliderMinLabel;
+	private JLabel sliderMaxLabel;
+	private JTable recordsTable;
+	private JScrollPane historyScrollPanel;
 }

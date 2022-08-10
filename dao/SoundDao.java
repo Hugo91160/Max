@@ -15,11 +15,12 @@ public class SoundDao {
 		PreparedStatement stmt = null;
 		try {
 			Class.forName("org.sqlite.JDBC");
-			c = DriverManager.getConnection("jdbc:sqlite:test.db");
+			c = DriverManager.getConnection("jdbc:sqlite:Max.db");
 
-			stmt = c.prepareStatement("INSERT INTO SOUNDS(FILEPATH, DATE) VALUES (?,?)");
+			stmt = c.prepareStatement("INSERT INTO SOUNDS(FILEPATH, DATE, DURATION) VALUES (?,?,?)");
 			stmt.setString(1, sound.getFilePath());
 			stmt.setString(2, sound.getDate().toLocaleString());
+			stmt.setDouble(3, sound.getDurationInSeconds());
 			stmt.executeUpdate();
 			
 			System.out.println("File " + sound.getFilePath() + " has been added to the database.");
@@ -38,7 +39,7 @@ public class SoundDao {
 		PreparedStatement stmt = null;
 		try {
 			Class.forName("org.sqlite.JDBC");
-			c = DriverManager.getConnection("jdbc:sqlite:test.db");
+			c = DriverManager.getConnection("jdbc:sqlite:Max.db");
 
 			stmt = c.prepareStatement("DELETE FROM SOUNDS WHERE FILEPATH = ?;");
 			stmt.setString(1, filePath);
@@ -62,7 +63,7 @@ public class SoundDao {
 		Statement stmt = null;
 		try {
 			Class.forName("org.sqlite.JDBC");
-			c = DriverManager.getConnection("jdbc:sqlite:test.db");
+			c = DriverManager.getConnection("jdbc:sqlite:Max.db");
 			c.setAutoCommit(false);
 
 			stmt = c.createStatement();

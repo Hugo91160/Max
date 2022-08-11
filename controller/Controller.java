@@ -92,7 +92,7 @@ public class Controller {
 		recorder = new Recorder(settings, sounds);
 		recorder.start();
 		try {
-			Runtime.getRuntime().exec("powershell.exe src/utils/SetVolumeToMaximum.ps1");
+			Runtime.getRuntime().exec("powershell.exe ./SetVolume.ps1 100");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -104,6 +104,11 @@ public class Controller {
 		recordDao.AddRecord(result);
 		recorder = null;
 		AllowSleep();
+		try {
+			Runtime.getRuntime().exec("powershell.exe ./SetVolume.ps1 10");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public List<Record> GetRecords(){

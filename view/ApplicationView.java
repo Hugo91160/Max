@@ -682,6 +682,7 @@ public class ApplicationView extends JFrame {
 	public void reloadRecordsTable() {
 		List<Record> records = ctrl.GetRecords();
 		DefaultTableModel model = (DefaultTableModel) recordsTable.getModel();
+		model.setRowCount(0);
 		for (int i = 0; i<records.size(); i++) {
 			model.addRow(new Object[] {records.get(i).getBeginDate(), records.get(i).getEndDate(), records.get(i).getEvents().size()});
 		}
